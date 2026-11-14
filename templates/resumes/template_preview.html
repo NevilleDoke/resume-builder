@@ -140,7 +140,6 @@
                         Create Resume &amp; Open Builder
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     </button>
-                    <button onclick="window.print()" type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Print Preview</button>
                 </div>
             </div>
         </form>
@@ -148,7 +147,6 @@
         <div class="mt-6 pt-6 border-t border-gray-100 flex justify-end gap-3">
             <a href="{% url 'resumes:export_docx' resume.id %}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Export DOCX</a>
             <a href="{% url 'resumes:export_pdf' resume.id %}" class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Export PDF</a>
-            <button onclick="window.print()" type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Print Preview</button>
         </div>
         {% endif %}
     </div>

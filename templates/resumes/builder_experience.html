@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Experience - {{ resume.title }}{% endblock %}
+{% block breadcrumbs %}
+{% include "resumes/breadcrumbs.html" %}
+{% endblock %}
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 fade-in">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Experience</h1>
+                <p class="text-gray-600">Add and manage your work history.</p>
+            </div>
+            <a href="{% url 'resumes:builder' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">&#8592; Back to Builder</a>
+        </div>
+
+        <form method="POST" class="space-y-6 mb-10">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <div class="flex justify-end gap-3 mt-4">
+                <a href="{% url 'resumes:builder' resume.id %}" class="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Cancel</a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Add Experience</button>
+            </div>
+        </form>
+
+        {% if experiences %}
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Current Experience</h2>
+        <div class="space-y-4">
+        {% for exp in experiences %}
+        <div class="p-4 bg-gray-50 rounded-lg border border-gray-100">
+            <div class="flex justify-between items-baseline mb-2">
+                <h3 class="font-semibold text-gray-900">{{ exp.role }}</h3>
+                <span class="text-sm text-gray-500">{{ exp.start_date|date:"M Y" }} - {% if exp.end_date %}{{ exp.end_date|date:"M Y" }}{% else %}Present{% endif %}</span>
+            </div>
+            <p class="text-sm text-gray-600 mb-1">{{ exp.company }}{% if exp.location %} &#8212; {{ exp.location }}{% endif %}</p>
+            {% if exp.tech_stack %}<p class="text-xs text-gray-500 mb-2"><em>Tech: {{ exp.tech_stack }}</em></p>{% endif %}
+            {% if exp.bullets.exists %}
+            <ul class="list-disc list-inside text-gray-700 text-sm space-y-1 mb-2">
+                {% for bullet in exp.bullets.all %}
+                <li>{{ bullet.text }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

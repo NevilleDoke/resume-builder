@@ -1,0 +1,9 @@
+{% extends "resumes/preview_eu.html" %}
+{% block title %}Preview (UK) - {{ resume.full_name }}{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .cv-section-title { border-bottom: 2px solid #e5e7eb; color: #374151; }
+    .cv-name { color: #111827; }
+</style>
+{% endblock %}

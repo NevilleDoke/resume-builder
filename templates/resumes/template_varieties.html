@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Choose a Template{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 fade-in">
+    {% block breadcrumbs %}
+{% include "resumes/breadcrumbs.html" %}
+{% endblock %}
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Choose Your New Template</h1>
+            <p class="text-gray-600 mt-2">
+                Your file <strong>{{ upload.original_filename }}</strong> has been parsed.
+                Pick a template style to see your existing data in a fresh layout.
+            </p>
+        </div>
+        <a href="{% url 'resumes:upload_resume' %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">&#8592; Upload another file</a>
+    </div>
+
+    {% if upload.status == "failed" %}
+    <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
+        <h3 class="text-red-800 font-semibold mb-2">Parsing failed</h3>
+        <p class="text-red-700 text-sm">{{ upload.parse_error }}</p>
+        <p class="text-red-600 text-sm mt-2">You can still upload a different file, or create a resume manually from the dashboard.</p>
+    </div>
+    {% endif %}
+
+    <!-- Extracted data summary -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2-5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            Extracted details (review before choosing)
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Name</div>
+                <div class="font-medium">{{ upload.parsed_data.full_name|default:"—" }}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Role</div>
+                <div class="font-medium">{{ upload.parsed_data.target_role|default:"—" }}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Experience entries</div>
+                <div class="font-medium">{{ upload.parsed_data.experiences|length }}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Skills</div>
+                <div class="font-medium">{{ upload.parsed_data.skills|length }}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Education</div>
+                <div class="font-medium">{{ upload.parsed_data.education|length }}</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded border border-gray-100">
+                <div class="text-xs text-gray-500 uppercase font-semibold">Projects / Certs</div>
+                <div class="font-medium">{{ upload.parsed_data.projects|length }} / {{ upload.parsed_data.certifications|length }}</div>
+            </div>
+        </div>
+        {% if upload.extracted_text %}
+        <details class="mt-6">
+            <summary class="cursor-pointer text-blue-600 font-medium hover:underline">Show raw extracted text</summary>
+            <pre class="mt-3 p-3 bg-gray-100 rounded text-xs text-gray-700 overflow-auto max-h-64">{{ upload.extracted_text }}</pre>
+        </details>
+        {% endif %}
+    </div>
+
+    <!-- Template variety cards -->
+    <h2 class="text-lg font-semibold text-gray-900 mb-6">Template varieties</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for style_key, style_label, style_desc in template_styles %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition group">
+            <div class="flex justify-between items-start mb-3">
+                <h3 class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition">{{ style_label }}</h3>
+                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700">Preview</span>
+            </div>
+            <p class="text-gray-600 text-sm mb-6">{{ style_desc }}</p>
+            <a href="{% url 'resumes:preview_upload_template' upload.id style_key %}" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-center px-4 py-2 rounded-lg font-semibold shadow-sm transition">Preview {{ style_label }}</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-10 text-center">
+        <a href="{% url 'resumes:dashboard' %}" class="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

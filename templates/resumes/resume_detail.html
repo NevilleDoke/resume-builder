@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ resume.title }}{% endblock %}
+{% block breadcrumbs %}
+{% include "resumes/breadcrumbs.html" %}
+{% endblock %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8 fade-in">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ resume.title }}</h1>
+            <p class="text-gray-600 mt-1">{{ resume.full_name }}</p>
+        </div>
+        <div class="flex gap-3">
+            <a href="{% url 'resumes:builder' resume.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 23l-7-7 7-7"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21l7-7"></path></svg>
+                Edit
+            </a>
+            <a href="{% url 'resumes:preview_resume' resume.id %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.488 2.822A3 3 0 10-2.118 5.834M21.12 15.032A3 3 0 1117.47 3.378M3.11 15.032a3 3 0 116.79-2.848M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                Preview
+            </a>
+            <a href="{% url 'resumes:export_docx' resume.id %}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition">Export DOCX</a>
+            <a href="{% url 'resumes:export_pdf' resume.id %}" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition">Export PDF</a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            {% if resume.professional_summary %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3 border-b border-gray-100 pb-2">Professional Summary</h2>
+                <p class="text-gray-700 leading-relaxed">{{ resume.professional_summary }}</p>
+            </div>
+            {% endif %}
+
+            {% if resume.experiences.exists %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Professional Experience</h2>
+                {% for exp in resume.experiences.all %}
+                <div class="mb-6">
+                    <div class="flex justify-between items-baseline mb-1">
+                        <h3 class="font-semibold text-gray-900">{{ exp.role }}</h3>
+                        <span class="text-sm text-gray-500">{{ exp.start_date|date:"M Y" }} - {% if exp.end_date %}{{ exp.end_date|date:"M Y" }}{% else %}Present{% endif %}</span>
+                    </div>
+                    <p class="text-sm font-medium text-blue-600 mb-1">{{ exp.company }}{% if exp.location %} — {{ exp.location }}{% endif %}</p>
+                    {% if exp.tech_stack %}
+                    <p class="text-xs text-gray-500 mb-2"><em>Tech: {{ exp.tech_stack }}</em></p>
+                    {% endif %}
+                    {% if exp.description %}
+                    <p class="text-gray-700 mb-2">{{ exp.description }}</p>
+                    {% endif %}
+                    {% if exp.bullets.exists %}
+                    <ul class="list-disc list-inside text-gray-700 space-y-1">
+                        {% for bullet in exp.bullets.all %}
+                        <li>{{ bullet.text }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if resume.projects.exists %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Projects</h2>
+                {% for proj in resume.projects.all %}
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-900">{{ proj.name }}</h3>
+                    {% if proj.technologies %}<p class="text-xs text-gray-500">{{ proj.technologies }}</p>{% endif %}
+                    <p class="text-gray-700 text-sm">{{ proj.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4 border-b border-gray-100 pb-2">Contact</h2>
+                <p class="text-sm text-gray-700 mb-2"><strong>Email:</strong> {{ resume.email }}</p>
+                {% if resume.phone %}<p class="text-sm text-gray-700 mb-2"><strong>Phone:</strong> {{ resume.phone }}</p>{% endif %}
+                {% if resume.location %}<p class="text-sm text-gray-700 mb-2"><strong>Location:</strong> {{ resume.location }}</p>{% endif %}
+                {% if resume.linkedin %}<p class="text-sm text-gray-700 mb-2"><strong>LinkedIn:</strong> {{ resume.linkedin }}</p>{% endif %}
+                {% if resume.github %}<p class="text-sm text-gray-700 mb-2"><strong>GitHub:</strong> {{ resume.github }}</p>{% endif %}
+                {% if resume.portfolio %}<p class="text-sm text-gray-700 mb-2"><strong>Portfolio:</strong> {{ resume.portfolio }}</p>{% endif %}
+
+                <h2 class="text-lg font-semibold text-gray-900 mt-8 mb-4 border-b border-gray-100 pb-2">Skills</h2>
+                {% for skill in resume.skills.all %}
+                <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium mb-2 mr-2">{{ skill.get_category_display }}: {{ skill.name }}</span>
+                {% endfor %}
+
+                {% if resume.education.exists %}
+                <h2 class="text-lg font-semibold text-gray-900 mt-6 mb-4 border-b border-gray-100 pb-2">Education</h2>
+                {% for edu in resume.education.all %}
+                <div class="mb-3">
+                    <p class="font-semibold text-gray-900 text-sm">{{ edu.degree }}</p>
+                    <p class="text-sm text-gray-600">{{ edu.institution }}</p>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

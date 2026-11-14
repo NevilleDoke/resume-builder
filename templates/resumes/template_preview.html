@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+{% block title %}{{ style_label }} Preview{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<style>
+    /* ---------- shared ---------- */
+    .cv-page { font-family: 'Inter', sans-serif; color: #1f2933; line-height: 1.55; }
+    .cv-no-print { margin-bottom: 10px; }
+    .cv-contact-item { margin: 0 6px; }
+    .cv-bullets { margin: 4px 0 0 16px; padding: 0; }
+    .cv-bullets li { margin-bottom: 3px; }
+    .cv-empty { color: #9ca3af; font-style: italic; font-size: 0.9rem; }
+
+    /* ---------- modern ---------- */
+    .cv-modern { max-width: 780px; margin: 22px auto; padding: 0 16px; text-align: center; }
+    .cv-modern .cv-name { font-size: 30px; font-weight: 800; color: #111827; letter-spacing: 0.4px; margin: 0 0 4px; }
+    .cv-modern .cv-rule { width: 60px; height: 4px; background: #1f2a44; margin: 10px auto 14px; border-radius: 2px; }
+    .cv-modern .cv-role { font-size: 14.5px; font-weight: 700; color: #2e5a88; text-transform: uppercase; letter-spacing: 1.6px; margin: 0 0 16px; }
+    .cv-modern .cv-contact { font-size: 12.5px; color: #6b7280; margin-bottom: 24px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .cv-modern .cv-section { margin-bottom: 24px; text-align: left; }
+    .cv-modern .cv-section-title { font-size: 13px; font-weight: 800; color: #1f2a44; text-transform: uppercase; letter-spacing: 1.2px; border-bottom: 2px solid #1f2a44; display: inline-block; padding-bottom: 5px; margin-bottom: 12px; }
+    .cv-modern .cv-item { margin-bottom: 14px; }
+    .cv-modern .cv-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .cv-modern .cv-role-name { font-weight: 700; color: #111827; font-size: 14px; }
+    .cv-modern .cv-company { font-weight: 600; color: #2e5a88; font-size: 13.5px; }
+    .cv-modern .cv-meta { font-size: 11.5px; color: #6b7280; font-style: italic; margin-top: 1px; }
+    .cv-modern .cv-tech { font-size: 11.5px; color: #2e5a88; font-weight: 600; margin-top: 4px; }
+    .cv-modern .cv-desc { font-size: 13px; color: #374151; margin-top: 5px; line-height: 1.5; }
+
+    /* ---------- classic ---------- */
+    .cv-classic { max-width: 760px; margin: 22px auto; padding: 0 18px; }
+    .cv-classic .cv-name { font-size: 22px; font-weight: 800; color: #111827; margin: 0 0 2px; }
+    .cv-classic .cv-role { font-size: 13px; color: #4b5563; font-weight: 600; margin: 0 0 8px; }
+    .cv-classic .cv-rule { border-bottom: 2.5px solid #1f2a44; margin: 10px 0 18px; }
+    .cv-classic .cv-contact { font-size: 12px; color: #6b7280; margin-bottom: 22px; }
+    .cv-classic .cv-section { margin-bottom: 20px; }
+    .cv-classic .cv-section-title { font-size: 12.5px; font-weight: 800; color: #111827; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #1f2a44; padding-bottom: 4px; margin-bottom: 10px; display: inline-block; }
+    .cv-classic .cv-item { margin-bottom: 14px; border-left: 3px solid transparent; padding-left: 10px; }
+    .cv-classic .cv-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .cv-classic .cv-role-name { font-weight: 700; color: #111827; font-size: 13.5px; }
+    .cv-classic .cv-company { font-weight: 600; color: #4b5563; font-size: 12.5px; }
+    .cv-classic .cv-meta { font-size: 11px; color: #6b7280; font-style: italic; margin-top: 1px; }
+    .cv-classic .cv-tech { font-size: 11px; color: #2e5a88; font-weight: 600; margin-top: 4px; }
+    .cv-classic .cv-desc { font-size: 12.5px; color: #374151; margin-top: 5px; line-height: 1.5; }
+    .cv-classic .cv-summary { font-size: 13px; color: #374151; line-height: 1.6; text-align: justify; }
+
+    /* ---------- minimal ---------- */
+    .cv-minimal { max-width: 700px; margin: 24px auto; padding: 0 20px; color: #374151; }
+    .cv-minimal .cv-name { font-size: 21px; font-weight: 700; letter-spacing: 2px; color: #111827; margin: 0 0 1px; text-transform: uppercase; }
+    .cv-minimal .cv-role { font-size: 11.5px; font-weight: 500; color: #9ca3af; letter-spacing: 1.5px; margin: 0 0 10px; text-transform: uppercase; }
+    .cv-minimal .cv-contact { font-size: 11px; color: #6b7280; margin-bottom: 18px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px; }
+    .cv-minimal .cv-section { margin-bottom: 20px; }
+    .cv-minimal .cv-section-title { font-size: 10.5px; font-weight: 700; color: #374151; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 9px; }
+    .cv-minimal .cv-item { margin-bottom: 13px; }
+    .cv-minimal .cv-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1px; }
+    .cv-minimal .cv-role-name { font-weight: 700; color: #111827; font-size: 12.5px; }
+    .cv-minimal .cv-company { color: #6b7280; font-size: 11.5px; }
+    .cv-minimal .cv-meta { font-size: 10px; color: #9ca3af; margin-top: 1px; }
+    .cv-minimal .cv-tech { font-size: 10px; color: #9ca3af; margin-top: 3px; }
+    .cv-minimal .cv-desc { font-size: 12px; color: #374151; margin-top: 4px; line-height: 1.55; }
+
+    /* ---------- creative ---------- */
+    .cv-creative { max-width: 800px; margin: 20px auto; padding: 0 20px; }
+    .cv-creative .cv-header-wrap { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; border-bottom: 4px double #1f2a44; padding-bottom: 14px; margin-bottom: 22px; flex-wrap: wrap; }
+    .cv-creative .cv-name { font-size: 26px; font-weight: 800; color: #1f2a44; margin: 0 0 4px; }
+    .cv-creative .cv-role { font-size: 13.5px; font-weight: 700; color: #2e5a88; text-transform: uppercase; letter-spacing: 1.4px; margin: 0 0 6px; }
+    .cv-creative .cv-contact { font-size: 11.5px; color: #6b7280; }
+    .cv-creative .cv-contact span { display: block; margin: 2px 0; }
+    .cv-creative .cv-section { margin-bottom: 20px; }
+    .cv-creative .cv-section-title { font-size: 12px; font-weight: 800; color: #ffffff; background: #1f2a44; padding: 4px 10px; border-radius: 4px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; display: inline-block; }
+    .cv-creative .cv-item { margin-bottom: 15px; background: #f8fafc; border-radius: 6px; padding: 10px 12px; border-left: 4px solid #2e5a88; }
+    .cv-creative .cv-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .cv-creative .cv-role-name { font-weight: 700; color: #1f2a44; font-size: 13.5px; }
+    .cv-creative .cv-company { font-weight: 600; color: #2e5a88; font-size: 12.5px; }
+    .cv-creative .cv-meta { font-size: 10.5px; color: #6b7280; font-style: italic; margin-top: 1px; }
+    .cv-creative .cv-tech { font-size: 10.5px; color: #2e5a88; font-weight: 700; margin-top: 4px; }
+    .cv-creative .cv-desc { font-size: 12.5px; color: #374151; margin-top: 5px; line-height: 1.5; }
+    .cv-creative .cv-skills-wrap { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 4px; }
+    .cv-creative .cv-skill-col { flex: 1; min-width: 140px; }
+    .cv-creative .cv-skill-cat { font-size: 10px; font-weight: 800; color: #2e5a88; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .cv-creative .cv-skill-list { font-size: 12px; color: #374151; line-height: 1.6; }
+
+    /* ---------- executive ---------- */
+    .cv-executive { max-width: 820px; margin: 20px auto; padding: 0 22px; }
+    .cv-executive .cv-name { font-size: 25px; font-weight: 800; color: #111827; margin: 0 0 2px; }
+    .cv-executive .cv-role { font-size: 13px; font-weight: 700; color: #2e5a88; text-transform: uppercase; letter-spacing: 1.2px; margin: 0 0 8px; }
+    .cv-executive .cv-contact { font-size: 11.5px; color: #6b7280; margin-bottom: 16px; border-bottom: 1px solid #d1d5db; padding-bottom: 12px; }
+    .cv-executive .cv-summary-box { background: #f1f5f9; border-left: 5px solid #1f2a44; padding: 14px 16px; border-radius: 0 6px 6px 0; margin-bottom: 22px; }
+    .cv-executive .cv-summary-title { font-size: 11px; font-weight: 800; color: #1f2a44; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 6px; }
+    .cv-executive .cv-summary-text { font-size: 13px; color: #334155; line-height: 1.7; margin: 0; }
+    .cv-executive .cv-section { margin-bottom: 20px; }
+    .cv-executive .cv-section-title { font-size: 12px; font-weight: 800; color: #1f2a44; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1.5px solid #1f2a44; padding-bottom: 5px; margin-bottom: 11px; display: inline-block; }
+    .cv-executive .cv-item { margin-bottom: 15px; }
+    .cv-executive .cv-item-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .cv-executive .cv-role-name { font-weight: 700; color: #111827; font-size: 13.5px; }
+    .cv-executive .cv-company { font-weight: 600; color: #2e5a88; font-size: 12.5px; }
+    .cv-executive .cv-meta { font-size: 10.5px; color: #6b7280; font-style: italic; margin-top: 1px; }
+    .cv-executive .cv-tech { font-size: 10.5px; color: #2e5a88; font-weight: 700; margin-top: 4px; }
+    .cv-executive .cv-desc { font-size: 12.5px; color: #374151; margin-top: 5px; line-height: 1.55; }
+
+    @media print {
+        body { background: white !important; }
+        .cv-no-print { display: none !important; }
+        .cv-page { max-width: none; margin: 0; padding: 0; box-shadow: none; border: none; }
+        a { text-decoration: none; color: inherit; }
+    }
+</style>
+{% endblock %}
+{% block breadcrumbs %}
+{% include "resumes/breadcrumbs.html" %}
+{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-8 fade-in cv-no-print">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">Preview — {{ style_label }}</h2>
+                {% if upload %}
+                <p class="text-gray-600 text-sm">Uploaded file: <strong>{{ upload.original_filename }}</strong> ({{ upload.file_type|upper }})</p>
+                {% endif %}
+            </div>
+            {% if upload %}
+            <a href="{% url 'resumes:template_varieties' upload.id %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">&#8592; Choose another template</a>
+            {% else %}
+            <a href="{% url 'resumes:builder' resume.id %}" class="text-blue-600 hover:text-blue-700 text-sm font-medium">&#8592; Back to Builder</a>
+            {% endif %}
+        </div>
+        {% if upload %}
+        <form method="POST" action="{% url 'resumes:create_resume_from_upload' upload.id %}" class="mt-6 pt-6 border-t border-gray-100">
+            {% csrf_token %}
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Resume title</label>
+                    <input type="text" name="title" value="{{ request.POST.title|default:data.full_name|default:'My Resume' }}" class="w-full md:w-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <input type="hidden" name="template_style" value="{{ template_style }}">
+                <div class="flex gap-3">
+                    <a href="{% url 'resumes:dashboard' %}" class="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Cancel</a>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition flex items-center gap-2">
+                        Create Resume &amp; Open Builder
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button onclick="window.print()" type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Print Preview</button>
+                </div>
+            </div>
+        </form>
+        {% else %}
+        <div class="mt-6 pt-6 border-t border-gray-100 flex justify-end gap-3">
+            <a href="{% url 'resumes:export_docx' resume.id %}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Export DOCX</a>
+            <a href="{% url 'resumes:export_pdf' resume.id %}" class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Export PDF</a>
+            <button onclick="window.print()" type="button" class="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-lg font-semibold shadow-md transition">Print Preview</button>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="cv-page cv-{{ template_style }}">
+        <!-- Header -->
+        <div class="cv-header-section" style="margin-bottom: 22px;">
+            {% if template_style == "creative" %}
+            <div class="cv-header-wrap">
+                <div>
+                    {% if data.full_name %}<h1 class="cv-name">{{ data.full_name }}</h1>{% endif %}
+                    {% if data.target_role %}<div class="cv-role">{{ data.target_role }}</div>{% endif %}
+                </div>
+                <div class="cv-contact">
+                    {% if data.email %}<span>{{ data.email }}</span>{% endif %}
+                    {% if data.phone %}<span>{{ data.phone }}</span>{% endif %}
+                    {% if data.location %}<span>{{ data.location }}</span>{% endif %}
+                    {% if data.linkedin %}<span>LinkedIn: {{ data.linkedin }}</span>{% endif %}
+                    {% if data.github %}<span>GitHub: {{ data.github }}</span>{% endif %}
+                </div>
+            </div>
+            {% else %}
+            {% if data.full_name %}<div class="cv-name">{{ data.full_name }}</div>{% endif %}
+            {% if data.target_role %}<div class="cv-role">{{ data.target_role }}</div>{% endif %}
+            <div class="cv-rule"></div>
+            <div class="cv-contact">
+                {% if data.email %}<span class="cv-contact-item">{{ data.email }}</span>{% endif %}
+                {% if data.phone %}<span class="cv-contact-item">{{ data.phone }}</span>{% endif %}
+                {% if data.location %}<span class="cv-contact-item">{{ data.location }}</span>{% endif %}
+                {% if data.linkedin %}<span class="cv-contact-item">LinkedIn: {{ data.linkedin }}</span>{% endif %}
+                {% if data.github %}<span class="cv-contact-item">GitHub: {{ data.github }}</span>{% endif %}
+                {% if data.portfolio %}<span class="cv-contact-item">Portfolio: {{ data.portfolio }}</span>{% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Professional Summary -->
+        {% if data.professional_summary %}
+        <div class="cv-section">
+            {% if template_style == "executive" %}
+            <div class="cv-summary-box"><p class="cv-summary-title">Professional Summary</p><p class="cv-summary-text">{{ data.professional_summary }}</p></div>
+            {% else %}
+            <h2 class="cv-section-title">Professional Summary</h2>
+            <p class="cv-desc" style="margin-top: 6px;">{{ data.professional_summary }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Experience -->
+        {% if data.experiences %}
+        <div class="cv-section">
+            <h2 class="cv-section-title">Professional Experience</h2>
+            {% for exp in data.experiences %}
+            <div class="cv-item">
+                <div class="cv-item-head">
+                    {% if exp.role %}<span class="cv-role-name">{{ exp.role }}</span>{% endif %}
+                    {% if exp.company %}<span class="cv-company">{{ exp.company }}</span>{% endif %}
+                </div>
+                {% if exp.start_date or exp.end_date or exp.location %}
+                <div class="cv-meta">
+                    {% if exp.start_date %}{{ exp.start_date }}{% endif %}
+                    {% if exp.start_date and exp.end_date %} — {% endif %}
+                    {% if exp.end_date %}{{ exp.end_date }}{% elif exp.is_current %} Present{% endif %}
+                    {% if exp.location %} | {{ exp.location }}{% endif %}
+                </div>
+                {% endif %}
+                {% if exp.tech_stack %}<div class="cv-tech">Tech Stack: {{ exp.tech_stack }}</div>{% endif %}
+                {% if exp.description %}<div class="cv-desc">{{ exp.description }}</div>{% endif %}
+                {% if exp.bullets %}
+                <ul class="cv-bullets">
+                    {% for bullet in exp.bullets %}<li>{{ bullet }}</li>{% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% elif template_style == "executive" and not data.experiences %}
+        <div class="cv-section"><h2 class="cv-section-title">Professional Experience</h2><p class="cv-empty">No experience extracted.</p></div>
+        {% endif %}
+
+        <!-- Education -->
+        {% if data.education %}
+        <div class="cv-section">
+            <h2 class="cv-section-title">Education</h2>
+            {% for edu in data.education %}
+            <div class="cv-item">
+                <div class="cv-item-head">
+                    {% if edu.degree %}<span class="cv-role-name">{{ edu.degree }}</span>{% endif %}
+                    {% if edu.institution %}<span class="cv-company">{{ edu.institution }}</span>{% endif %}
+                </div>
+                <div class="cv-meta">
+                    {% if edu.start_date %}{{ edu.start_date }}{% endif %}
+                    {% if edu.start_date and edu.end_date %} — {% endif %}
+                    {% if edu.end_date %}{{ edu.end_date }}{% endif %}
+                    {% if edu.location %} | {{ edu.location }}{% endif %}
+                    {% if edu.grade %} | Grade: {{ edu.grade }}{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Skills -->
+        {% if data.skills %}
+        <div class="cv-section">
+            <h2 class="cv-section-title">Skills</h2>
+            {% if template_style == "creative" %}
+            {% regroup data.skills by category as skill_groups %}
+            <div class="cv-skills-wrap">
+                {% for group in skill_groups %}
+                <div class="cv-skill-col">
+                    <div class="cv-skill-cat">{{ group.grouper }}</div>
+                    <div class="cv-skill-list">{{ group.list|join:", " }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            {% regroup data.skills by category as skill_groups %}
+            {% for group in skill_groups %}
+            <div class="cv-item" style="margin-bottom: 9px;">
+                <div class="cv-tech" style="margin-top: 0;">{{ group.grouper }}:</div>
+                <div class="cv-desc" style="margin-top: 1px;">{{ group.list|join:", " }}</div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Projects -->
+        {% if data.projects %}
+        <div class="cv-section">
+            <h2 class="cv-section-title">Projects</h2>
+            {% for proj in data.projects %}
+            <div class="cv-item">
+                <div class="cv-item-head">
+                    {% if proj.name %}<span class="cv-role-name">{{ proj.name }}</span>{% endif %}
+                </div>
+                {% if proj.technologies %}<div class="cv-tech">{{ proj.technologies }}</div>{% endif %}
+                {% if proj.description %}<div class="cv-desc">{{ proj.description }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Certifications -->
+        {% if data.certifications %}
+        <div class="cv-section">
+            <h2 class="cv-section-title">Certifications</h2>
+            {% for cert in data.certifications %}
+            <div class="cv-item">
+                <div class="cv-item-head">
+                    {% if cert.name %}<span class="cv-role-name">{{ cert.name }}</span>{% endif %}
+                    {% if cert.issuer %}<span class="cv-company">{{ cert.issuer }}</span>{% endif %}
+                </div>
+                {% if cert.date %}<div class="cv-meta">{{ cert.date }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if upload.extracted_text %}
+    <details class="cv-no-print mt-8">
+        <summary class="cursor-pointer text-blue-600 font-medium hover:underline">Show raw extracted text</summary>
+        <pre class="mt-3 p-3 bg-gray-100 rounded text-xs text-gray-700 overflow-auto max-h-64">{{ upload.extracted_text }}</pre>
+    </details>
+    {% endif %}
+</div>
+{% endblock %}

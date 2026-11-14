@@ -1,0 +1,25 @@
+{% if breadcrumbs %}
+<nav aria-label="Breadcrumb">
+    <ol class="flex flex-wrap items-center gap-1 px-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm">
+        {% for crumb_label, crumb_url in breadcrumbs %}
+        {% if not forloop.first %}
+        <li class="flex items-center gap-2">
+            <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </li>
+        {% endif %}
+        {% if forloop.last or not crumb_url %}
+        <li class="flex items-center gap-1">
+            <span class="px-2.5 py-1.5 rounded-lg bg-gray-50 text-gray-600 text-xs font-medium border border-gray-100" title="You are here: {{ crumb_label }}">{{ crumb_label }}</span>
+        </li>
+        {% else %}
+        <li>
+            <a href="{{ crumb_url }}"
+               class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-700 hover:no-underline transition-all duration-200 border border-transparent hover:border-blue-100"
+               title="Go to {{ crumb_label }}"
+               aria-label="Go to {{ crumb_label }}">{{ crumb_label }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+{% endif %}

@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% block title %}Builder - {{ resume.title }}{% endblock %}
+{% block breadcrumbs %}
+{% include "resumes/breadcrumbs.html" %}
+{% endblock %}
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 py-8 fade-in">
+    <div class="flex flex-col lg:flex-row gap-8 min-h-[80vh]">
+        <!-- Sidebar Navigation -->
+        <div class="w-full lg:w-72 flex-shrink-0">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-8">
+                <h2 class="text-lg font-bold text-gray-900 mb-6">Resume Builder</h2>
+                <nav class="space-y-1" id="builder-nav">
+                    <button type="button" onclick="showBuilderStep('personal', this)" class="w-full text-left px-4 py-3 rounded-lg bg-blue-50 text-blue-700 font-medium border border-blue-100 flex items-center justify-between group" id="nav-personal">
+                        <span>Personal Information</span>
+                        <svg class="w-4 h-4 text-blue-500 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('summary', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-summary">
+                        <span>Professional Summary</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('experience', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-experience">
+                        <span>Experience</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('education', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-education">
+                        <span>Education</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('skills', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-skills">
+                        <span>Skills</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('projects', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-projects">
+                        <span>Projects</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                    <button type="button" onclick="showBuilderStep('certifications', this)" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition flex items-center justify-between group" id="nav-certifications">
+                        <span>Certifications</span>
+                        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </button>
+                </nav>
+                <div class="mt-6 pt-6 border-t border-gray-100">
+                    <a href="{% url 'resumes:preview_resume' resume.id %}" class="block w-full text-center px-4 py-3 rounded-lg bg-indigo-50 text-indigo-700 font-medium border border-indigo-100 hover:bg-indigo-100 transition">Preview Resume</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area with Tabbed Sections -->
+        <div class="flex-1">
+            <header class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">{{ resume.full_name }}</h1>
+                <p class="text-gray-600 text-sm">{{ resume.get_target_country_display }} &#183; {{ resume.target_role }}</p>
+            </header>
+
+            <!-- Personal Information Section (Editable by default) -->
+            <section id="step-personal" class="builder-step active">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6">Personal Information</h2>
+
+                    <form id="personal-form" method="POST" action="{% url 'resumes:builder_personal' resume.id %}" class="space-y-5">
+                        {% csrf_token %}
+                        <input type="hidden" name="title" value="{{ resume.title }}">
+                        <input type="hidden" name="template_style" value="{{ resume.template_style }}">
+                        <input type="hidden" name="is_default" value="{{ resume.is_default|yesno:'on,off' }}">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" name="full_name" value="{{ resume.full_name }}" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" name="email" value="{{ resume.email }}" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                                <input type="text" name="phone" value="{{ resume.phone }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Location</label>
+                                <input type="text" name="location" value="{{ resume.location }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">LinkedIn</label>
+                                <input type="url" name="linkedin" value="{{ resume.linkedin }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">GitHub</label>
+                                <input type="url" name="github" value="{{ resume.github }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Portfolio</label>
+                                <input type="url" name="portfolio" value="{{ resume.portfolio }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Target Country</label>
+                                <select name="target_country" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                                    {% for code, name in resume.COUNTRY_CHOICES %}
+                                    <option value="{{ code }}" {% if resume.target_country == code %}selected{% endif %}>{{ name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Target Role</label>
+                                <input type="text" name="target_role" value="{{ resume.target_role }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="mt-5">
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Professional Summary</label>
+                            <textarea name="professional_summary" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">{{ resume.professional_summary }}</textarea>
+                        </div>
+
+                        <div class="mt-6 flex justify-end">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Professional Summary Section (Editable by default) -->
+            <section id="step-summary" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-6">Professional Summary</h2>
+
+                    <form id="summary-form" method="POST" action="{% url 'resumes:builder_summary' resume.id %}" class="space-y-4">
+                        {% csrf_token %}
+                        <input type="hidden" name="title" value="{{ resume.title }}">
+                        <input type="hidden" name="template_style" value="{{ resume.template_style }}">
+                        <input type="hidden" name="full_name" value="{{ resume.full_name }}">
+                        <input type="hidden" name="email" value="{{ resume.email }}">
+                        <input type="hidden" name="phone" value="{{ resume.phone }}">
+                        <input type="hidden" name="location" value="{{ resume.location }}">
+                        <input type="hidden" name="linkedin" value="{{ resume.linkedin }}">
+                        <input type="hidden" name="github" value="{{ resume.github }}">
+                        <input type="hidden" name="portfolio" value="{{ resume.portfolio }}">
+                        <input type="hidden" name="target_country" value="{{ resume.target_country }}">
+                        <input type="hidden" name="target_role" value="{{ resume.target_role }}">
+                        <input type="hidden" name="is_default" value="{{ resume.is_default|yesno:'on,off' }}">
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Professional Summary</label>
+                            <textarea name="professional_summary" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">{{ resume.professional_summary }}</textarea>
+                            <p class="text-xs text-gray-500 mt-1">Tailor your summary to match your target role.</p>
+                        </div>
+
+                        <div class="mt-5 flex justify-end">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Save Summary</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Experience Section -->
+            <section id="step-experience" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Experience</h2>
+                        <a href="{% url 'resumes:builder_experience' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">+ Add Experience</a>
+                    </div>
+                    {% if resume.experiences.exists %}
+                    {% for exp in resume.experiences.all %}
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="flex justify-between items-baseline mb-1">
+                            <h3 class="font-semibold text-gray-900">{{ exp.role }}</h3>
+                            <span class="text-sm text-gray-500">{{ exp.start_date|date:"M Y" }} - {% if exp.end_date %}{{ exp.end_date|date:"M Y" }}{% else %}Present{% endif %}</span>
+                        </div>
+                        <p class="text-sm font-medium text-blue-600 mb-1">{{ exp.company }}{% if exp.location %} — {{ exp.location }}{% endif %}</p>
+                        {% if exp.tech_stack %}
+                        <p class="text-xs text-gray-500 mb-2"><em>Tech: {{ exp.tech_stack }}</em></p>
+                        {% endif %}
+                        {% if exp.description %}
+                        <p class="text-gray-700 mb-2">{{ exp.description }}</p>
+                        {% endif %}
+                        {% if exp.bullets.exists %}
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            {% for bullet in exp.bullets.all %}
+                            <li>{{ bullet.text }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-gray-500 italic">No experience added yet.</p>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Education Section -->
+            <section id="step-education" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Education</h2>
+                    {% if resume.education.exists %}
+                    {% for edu in resume.education.all %}
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="flex justify-between items-baseline mb-1">
+                            <h3 class="font-semibold text-gray-900">{{ edu.degree }}</h3>
+                            <span class="text-sm text-gray-500">{{ edu.start_date|date:"M Y" }} - {% if edu.end_date %}{{ edu.end_date|date:"M Y" }}{% else %}Present{% endif %}</span>
+                        </div>
+                        <p class="text-sm font-medium text-blue-600 mb-1">{{ edu.institution }}{% if edu.location %}, {{ edu.location }}{% endif %}</p>
+                        {% if edu.grade %}
+                        <p class="text-xs text-gray-500"><em>Grade: {{ edu.grade }}</em></p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-gray-500 italic">No education added yet.</p>
+                    {% endif %}
+                    <div class="mt-6 flex justify-end">
+                        <a href="{% url 'resumes:builder_education' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Add Education &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section id="step-skills" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Skills</h2>
+                    {% if resume.skills.exists %}
+                    <div class="flex flex-wrap gap-2">
+                        {% for skill in resume.skills.all %}
+                        <span class="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-medium">{{ skill.get_category_display }}: {{ skill.name }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 italic">No skills added yet.</p>
+                    {% endif %}
+                    <div class="mt-6 flex justify-end">
+                        <a href="{% url 'resumes:builder_skills' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Add Skills &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Projects Section -->
+            <section id="step-projects" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Projects</h2>
+                    {% if resume.projects.exists %}
+                    {% for proj in resume.projects.all %}
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <h3 class="font-semibold text-gray-900 mb-1">{{ proj.name }}</h3>
+                        {% if proj.technologies %}
+                        <p class="text-xs text-gray-500 mb-2">{{ proj.technologies }}</p>
+                        {% endif %}
+                        <p class="text-gray-700">{{ proj.description }}</p>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-gray-500 italic">No projects added yet.</p>
+                    {% endif %}
+                    <div class="mt-6 flex justify-end">
+                        <a href="{% url 'resumes:builder_projects' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Add Projects &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Certifications Section -->
+            <section id="step-certifications" class="builder-step hidden">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Certifications</h2>
+                    {% if resume.certifications.exists %}
+                    {% for cert in resume.certifications.all %}
+                    <div class="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                        <div class="flex justify-between items-baseline mb-1">
+                            <h3 class="font-semibold text-gray-900">{{ cert.name }}</h3>
+                            <span class="text-sm text-gray-500">{{ cert.issuer }}</span>
+                        </div>
+                        {% if cert.date %}
+                        <p class="text-xs text-gray-500">{{ cert.date|date:"M Y" }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p class="text-gray-500 italic">No certifications added yet.</p>
+                    {% endif %}
+                    <div class="mt-6 flex justify-end">
+                        <a href="{% url 'resumes:builder_certifications' resume.id %}" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Add Certifications &#8594;</a>
+                    </div>
+                </div>
+            </section>
+
+            <div class="mt-8 flex justify-end gap-3">
+                <a href="{% url 'resumes:resume_detail' resume.id %}" class="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition">Back to Details</a>
+                <a href="{% url 'resumes:export_docx' resume.id %}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Export DOCX</a>
+                <a href="{% url 'resumes:export_pdf' resume.id %}" class="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md transition">Export PDF</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification container -->
+<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+<script>
+    function showBuilderStep(step, btn) {
+        // Hide all sections
+        document.querySelectorAll('.builder-step').forEach(function(el) {
+            el.classList.add('hidden');
+            el.classList.remove('active');
+        });
+
+        // Remove active styling from all nav buttons
+        document.querySelectorAll('#builder-nav button').forEach(function(el) {
+            el.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-100');
+            el.classList.add('text-gray-700');
+        });
+
+        // Show selected section
+        document.getElementById('step-' + step).classList.remove('hidden');
+        document.getElementById('step-' + step).classList.add('active');
+
+        // Style active nav button
+        btn.classList.remove('text-gray-700');
+        btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-100');
+    }
+
+    function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        toast.className = bgColor + ' text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2 min-w-[300px]';
+        toast.innerHTML = '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="' + (type === 'success' ? 'M5 13l4 4L19 7' : 'M18 12m-4 0v4m4-8h4m-4 8h4') + '"></svg><span>' + message + '</span>';
+        container.appendChild(toast);
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(20px)';
+            toast.style.transition = 'all 0.3s ease';
+            setTimeout(function() { toast.remove(); }, 300);
+        }, 3000);
+    }
+
+    function setupAjaxForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.status === 'success') {
+                    showToast(data.message, 'success');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                } else {
+                    showToast(data.message || 'Save failed.', 'error');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }
+            })
+            .catch(function(error) {
+                showToast('Network error. Please try again.', 'error');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            });
+        });
+    }
+
+    setupAjaxForm('personal-form');
+    setupAjaxForm('summary-form');
+</script>
+{% endblock %}

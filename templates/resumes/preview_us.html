@@ -1,0 +1,10 @@
+{% extends "resumes/preview_eu.html" %}
+{% block title %}Preview (US) - {{ resume.full_name }}{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .cv-contact { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .cv-section-title { border-bottom: 2px solid #e5e7eb; color: #374151; }
+    .cv-name { color: #111827; }
+</style>
+{% endblock %}
